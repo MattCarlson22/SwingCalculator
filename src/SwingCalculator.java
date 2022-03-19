@@ -22,7 +22,7 @@ public class SwingCalculator {
                 new JButton("7"), new JButton("8"), new JButton("9"),
                 new JButton("4"), new JButton("5"), new JButton("6"),
                 new JButton("1"), new JButton("2"), new JButton("3"),
-                new JButton("0"), new JButton(".")
+                new JButton("0"), new JButton("."), new JButton("C")
         };
 
         JButton[] ops = {
@@ -164,7 +164,16 @@ public class SwingCalculator {
         });
 
         // Row 4
-        nums[9].setBounds(20,460,320,80); // 0
+        nums[11].setLocation(20,460); // Clear
+        nums[11].addActionListener(b -> {
+            tf.setText("");
+            lastNum.set(0.0);
+            numTyped.set(false);
+            decimalPressed.set(false);
+            ansShowing.set(false);
+        });
+
+        nums[9].setLocation(190,460); // 0
         nums[9].addActionListener(b -> {
             if (ansShowing.get()) {
                 tf.setText("");
@@ -174,7 +183,7 @@ public class SwingCalculator {
             numTyped.set(true);
         });
 
-        nums[10].setBounds(360,460,150,80); // .
+        nums[10].setLocation(360,460); // .
         nums[10].addActionListener(b -> {
             if (ansShowing.get()) {
                 tf.setText("");
