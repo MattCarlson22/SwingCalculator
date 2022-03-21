@@ -4,12 +4,36 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SwingCalculator {
-    private enum Operation {
+    enum Operation {
         DIVISION,
         MULTIPLICATION,
         SUBTRACTION,
         ADDITION,
         DEFAULT
+    }
+    static void numsActionListener(JButton button, JFormattedTextField textField, AtomicBoolean ans, AtomicBoolean num, String text) {
+        button.addActionListener(b -> {
+            if (ans.get()) {
+                textField.setText("");
+                ans.set(false);
+            }
+            textField.setText(textField.getText()+text);
+            num.set(true);
+        });
+    }
+    static void opsActionListener(JButton button, JFormattedTextField textField, AtomicBoolean ans, AtomicBoolean num, AtomicBoolean decimal, AtomicBoolean neg, AtomicReference<Operation> op1, AtomicReference<Double> last, Operation op2) {
+        button.addActionListener(b -> {
+            last.set(Double.parseDouble(textField.getText()));
+            op1.set(op2);
+            if (ans.get())
+                textField.setText("");
+            if (num.get()) {
+                textField.setText("");
+                num.set(false);
+                decimal.set(false);
+                neg.set(false);
+            }
+        });
     }
     public static void main(String[] args) {
 
@@ -22,7 +46,8 @@ public class SwingCalculator {
                 new JButton("7"), new JButton("8"), new JButton("9"),
                 new JButton("4"), new JButton("5"), new JButton("6"),
                 new JButton("1"), new JButton("2"), new JButton("3"),
-                new JButton("0"), new JButton("."), new JButton("C")
+                new JButton("0"), new JButton("."), new JButton("C"),
+                new JButton("(-)")
         };
 
         JButton[] ops = {
@@ -65,6 +90,7 @@ public class SwingCalculator {
         AtomicBoolean numTyped = new AtomicBoolean(false);
         AtomicBoolean ansShowing = new AtomicBoolean(false);
         AtomicBoolean decimalPressed = new AtomicBoolean(false);
+        AtomicBoolean negPressed = new AtomicBoolean(false);
 
         // Variables to store the nums
         AtomicReference<Double> ans = new AtomicReference<>(0.0);
@@ -72,96 +98,33 @@ public class SwingCalculator {
 
         // Row 1
         nums[0].setLocation(20,160); // 7
-        nums[0].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"7");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[0],tf,ansShowing,numTyped,"7");
 
         nums[1].setLocation(190,160); // 8
-        nums[1].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"8");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[1],tf,ansShowing,numTyped,"8");
 
         nums[2].setLocation(360,160); // 9
-        nums[2].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"9");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[2],tf,ansShowing,numTyped,"9");
 
         // Row 2
         nums[3].setLocation(20,260); // 4
-        nums[3].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"4");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[3],tf,ansShowing,numTyped,"4");
 
         nums[4].setLocation(190,260); // 5
-        nums[4].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"5");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[4],tf,ansShowing,numTyped,"5");
 
         nums[5].setLocation(360,260); // 6
-        nums[5].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"6");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[5],tf,ansShowing,numTyped,"6");
 
         // Row 3
         nums[6].setLocation(20,360); // 1
-        nums[6].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"1");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[6],tf,ansShowing,numTyped,"1");
 
         nums[7].setLocation(190,360); // 2
-        nums[7].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"2");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[7],tf,ansShowing,numTyped,"2");
 
         nums[8].setLocation(360,360); // 3
-        nums[8].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"3");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[8],tf,ansShowing,numTyped,"3");
 
         // Row 4
         nums[11].setLocation(20,460); // Clear
@@ -174,16 +137,9 @@ public class SwingCalculator {
         });
 
         nums[9].setLocation(190,460); // 0
-        nums[9].addActionListener(b -> {
-            if (ansShowing.get()) {
-                tf.setText("");
-                ansShowing.set(false);
-            }
-            tf.setText(tf.getText()+"0");
-            numTyped.set(true);
-        });
+        SwingCalculator.numsActionListener(nums[9],tf,ansShowing,numTyped,"0");
 
-        nums[10].setLocation(360,460); // .
+        nums[10].setBounds(360,460,150,35); // .
         nums[10].addActionListener(b -> {
             if (ansShowing.get()) {
                 tf.setText("");
@@ -196,58 +152,30 @@ public class SwingCalculator {
             numTyped.set(true);
         });
 
+        nums[12].setBounds(360,505,150,35); // (-)
+        nums[12].addActionListener(b -> {
+            if (ansShowing.get()) {
+                tf.setText("");
+                ansShowing.set(false);
+            }
+            if (!negPressed.get() && !numTyped.get()) {
+                tf.setText("-");
+                negPressed.set(true);
+            }
+        });
+
         // Operations Buttons
         ops[0].setLocation(530,160); // Divide
-        ops[0].addActionListener(b -> {
-            lastNum.set(Double.parseDouble(tf.getText()));
-            currentOperation.set(Operation.DIVISION);
-            if (ansShowing.get())
-                tf.setText("");
-            if (numTyped.get()) {
-                tf.setText("");
-                numTyped.set(false);
-                decimalPressed.set(false);
-            }
-        });
+        SwingCalculator.opsActionListener(ops[0],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.DIVISION);
 
         ops[1].setLocation(530,240); // Multiply
-        ops[1].addActionListener(b -> {
-            lastNum.set(Double.parseDouble(tf.getText()));
-            currentOperation.set(Operation.MULTIPLICATION);
-            if (ansShowing.get())
-                tf.setText("");
-            if (numTyped.get()) {
-                tf.setText("");
-                numTyped.set(false);
-                decimalPressed.set(false);
-            }
-        });
+        SwingCalculator.opsActionListener(ops[1],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.MULTIPLICATION);
 
         ops[2].setLocation(530,320); // Subtract
-        ops[2].addActionListener(b -> {
-            lastNum.set(Double.parseDouble(tf.getText()));
-            currentOperation.set(Operation.SUBTRACTION);
-            if (ansShowing.get())
-                tf.setText("");
-            if (numTyped.get()) {
-                tf.setText("");
-                numTyped.set(false);
-                decimalPressed.set(false);
-            }
-        });
+        SwingCalculator.opsActionListener(ops[2],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.SUBTRACTION);
 
         ops[3].setLocation(530,400); // Add
-        ops[3].addActionListener(b -> {
-            lastNum.set(Double.parseDouble(tf.getText()));
-            currentOperation.set(Operation.ADDITION);
-            if (ansShowing.get())
-                tf.setText("");
-            if (numTyped.get()) {
-                tf.setText("");
-                numTyped.set(false);
-                decimalPressed.set(false);
-            }
-        });
+        SwingCalculator.opsActionListener(ops[3],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.ADDITION);
 
         ops[4].setLocation(530,480); // Equals
         ops[4].addActionListener(b -> {
@@ -261,6 +189,8 @@ public class SwingCalculator {
             tf.setText(Double.toString(ans.get()));
             ansShowing.set(true);
             decimalPressed.set(false);
+            numTyped.set(false);
+            negPressed.set(false);
         });
 
         // Making the Font Bigger
