@@ -4,6 +4,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 public class SwingCalculator {
+
+    static AtomicBoolean numTyped = new AtomicBoolean(false);
+    static AtomicBoolean ansShowing = new AtomicBoolean(false);
+    static AtomicBoolean decimalPressed = new AtomicBoolean(false);
+    static AtomicBoolean negPressed = new AtomicBoolean(false);
+
     enum Operation {
         DIVISION,
         MULTIPLICATION,
@@ -11,27 +17,27 @@ public class SwingCalculator {
         ADDITION,
         DEFAULT
     }
-    static void numsActionListener(JButton button, JFormattedTextField textField, AtomicBoolean ans, AtomicBoolean num, String text) {
+    static void numsActionListener(JButton button, JFormattedTextField textField, String text) {
         button.addActionListener(b -> {
-            if (ans.get()) {
+            if (ansShowing.get()) {
                 textField.setText("");
-                ans.set(false);
+                ansShowing.set(false);
             }
             textField.setText(textField.getText()+text);
-            num.set(true);
+            numTyped.set(true);
         });
     }
-    static void opsActionListener(JButton button, JFormattedTextField textField, AtomicBoolean ans, AtomicBoolean num, AtomicBoolean decimal, AtomicBoolean neg, AtomicReference<Operation> op1, AtomicReference<Double> last, Operation op2) {
+    static void opsActionListener(JButton button, JFormattedTextField textField, AtomicReference<Operation> op1, AtomicReference<Double> last, Operation op2) {
         button.addActionListener(b -> {
             last.set(Double.parseDouble(textField.getText()));
             op1.set(op2);
-            if (ans.get())
+            if (ansShowing.get())
                 textField.setText("");
-            if (num.get()) {
+            if (numTyped.get()) {
                 textField.setText("");
-                num.set(false);
-                decimal.set(false);
-                neg.set(false);
+                numTyped.set(false);
+                decimalPressed.set(false);
+                negPressed.set(false);
             }
         });
     }
@@ -87,10 +93,6 @@ public class SwingCalculator {
         }
 
         // bools
-        AtomicBoolean numTyped = new AtomicBoolean(false);
-        AtomicBoolean ansShowing = new AtomicBoolean(false);
-        AtomicBoolean decimalPressed = new AtomicBoolean(false);
-        AtomicBoolean negPressed = new AtomicBoolean(false);
 
         // Variables to store the nums
         AtomicReference<Double> ans = new AtomicReference<>(0.0);
@@ -98,33 +100,33 @@ public class SwingCalculator {
 
         // Row 1
         nums[0].setLocation(20,160); // 7
-        SwingCalculator.numsActionListener(nums[0],tf,ansShowing,numTyped,"7");
+        SwingCalculator.numsActionListener(nums[0],tf,"7");
 
         nums[1].setLocation(190,160); // 8
-        SwingCalculator.numsActionListener(nums[1],tf,ansShowing,numTyped,"8");
+        SwingCalculator.numsActionListener(nums[1],tf,"8");
 
         nums[2].setLocation(360,160); // 9
-        SwingCalculator.numsActionListener(nums[2],tf,ansShowing,numTyped,"9");
+        SwingCalculator.numsActionListener(nums[2],tf,"9");
 
         // Row 2
         nums[3].setLocation(20,260); // 4
-        SwingCalculator.numsActionListener(nums[3],tf,ansShowing,numTyped,"4");
+        SwingCalculator.numsActionListener(nums[3],tf,"4");
 
         nums[4].setLocation(190,260); // 5
-        SwingCalculator.numsActionListener(nums[4],tf,ansShowing,numTyped,"5");
+        SwingCalculator.numsActionListener(nums[4],tf,"5");
 
         nums[5].setLocation(360,260); // 6
-        SwingCalculator.numsActionListener(nums[5],tf,ansShowing,numTyped,"6");
+        SwingCalculator.numsActionListener(nums[5],tf,"6");
 
         // Row 3
         nums[6].setLocation(20,360); // 1
-        SwingCalculator.numsActionListener(nums[6],tf,ansShowing,numTyped,"1");
+        SwingCalculator.numsActionListener(nums[6],tf,"1");
 
         nums[7].setLocation(190,360); // 2
-        SwingCalculator.numsActionListener(nums[7],tf,ansShowing,numTyped,"2");
+        SwingCalculator.numsActionListener(nums[7],tf,"2");
 
         nums[8].setLocation(360,360); // 3
-        SwingCalculator.numsActionListener(nums[8],tf,ansShowing,numTyped,"3");
+        SwingCalculator.numsActionListener(nums[8],tf,"3");
 
         // Row 4
         nums[11].setLocation(20,460); // Clear
@@ -137,7 +139,7 @@ public class SwingCalculator {
         });
 
         nums[9].setLocation(190,460); // 0
-        SwingCalculator.numsActionListener(nums[9],tf,ansShowing,numTyped,"0");
+        SwingCalculator.numsActionListener(nums[9],tf,"0");
 
         nums[10].setBounds(360,460,150,35); // .
         nums[10].addActionListener(b -> {
@@ -166,16 +168,16 @@ public class SwingCalculator {
 
         // Operations Buttons
         ops[0].setLocation(530,160); // Divide
-        SwingCalculator.opsActionListener(ops[0],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.DIVISION);
+        SwingCalculator.opsActionListener(ops[0],tf,currentOperation,lastNum,Operation.DIVISION);
 
         ops[1].setLocation(530,240); // Multiply
-        SwingCalculator.opsActionListener(ops[1],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.MULTIPLICATION);
+        SwingCalculator.opsActionListener(ops[1],tf,currentOperation,lastNum,Operation.MULTIPLICATION);
 
         ops[2].setLocation(530,320); // Subtract
-        SwingCalculator.opsActionListener(ops[2],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.SUBTRACTION);
+        SwingCalculator.opsActionListener(ops[2],tf,currentOperation,lastNum,Operation.SUBTRACTION);
 
         ops[3].setLocation(530,400); // Add
-        SwingCalculator.opsActionListener(ops[3],tf,ansShowing,numTyped,decimalPressed,negPressed,currentOperation,lastNum,Operation.ADDITION);
+        SwingCalculator.opsActionListener(ops[3],tf,currentOperation,lastNum,Operation.ADDITION);
 
         ops[4].setLocation(530,480); // Equals
         ops[4].addActionListener(b -> {
